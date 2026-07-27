@@ -84,14 +84,20 @@ const App = () => {
           setInputName("");
           setInputNumber("");
         })
-        .catch(() => {
-          showMessage(
-            `Information of ${existing.name} has already been removed from server`,
-            "error",
-          );
-          setContacts(contacts.filter((c) => c.id !== existing.id));
-          setInputName("");
-          setInputNumber("");
+        .catch((error) => {
+          // Check if the backend sent a specific validation error
+          if (error.response?.data?.error) {
+            showMessage(error.response.data.error, "error");
+          } else {
+            // Fallback for 404 (actually deleted from server) or other unknown errors
+            showMessage(
+              `Information of ${existing.name} has already been removed from server`,
+              "error",
+            );
+            setContacts(contacts.filter((c) => c.id !== existing.id));
+            setInputName("");
+            setInputNumber("");
+          }
         });
       return;
     }
